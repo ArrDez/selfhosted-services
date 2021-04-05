@@ -1,0 +1,37 @@
+version: "3.8"
+
+networks:
+  default:
+    external:
+      name: traefik_net
+
+services:
+
+  fireflyiii:
+    image: jc5x/firefly-iii:latest
+    depends_on:
+      - fireflyiiidb
+    ports:
+      - 8080
+    volumes:
+      - ./containerfs/fireflyiii/export:/var/www/firefly-iii/storage/export
+      - ./containerfs/fireflyiii/upload:/var/www/firefly-iii/storage/upload
+    env_file: ./.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.firefly.entrypoints=websecure"
+      - "traefik.http.routers.firefly.tls.certresolver=acme"
+      - "traefik.http.routers.firefly.rule=Host(`${TRAEFIK_HOST}`)"
+
+  fireflyiiidb:
+    image: postgres:13-alpine
+    restart: always
+    ports: 
+      - 5432
+    volumes:
+      - ./containerfs/fireflyiiidb/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    

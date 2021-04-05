@@ -1,0 +1,20 @@
+version: "3.8"
+
+networks:
+  default:
+    external:
+      name: traefik_net
+    
+services:
+
+  linkding:
+    image: sissbruecker/linkding:latest
+    ports:
+      - 9090
+    volumes:
+      - ./containerfs/data:/etc/linkding/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.linkding.entrypoints=websecure"
+      - "traefik.http.routers.linkding.tls.certresolver=acme"
+      - "traefik.http.routers.linkding.rule=Host(`${TRAEFIK_HOST}`)"

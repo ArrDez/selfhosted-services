@@ -1,0 +1,22 @@
+version: "3.8"
+
+networks:
+  default:
+    external:
+      name: traefik_net
+    
+services:
+
+  wallabag:
+    image: wallabag/wallabag:latest
+    ports:
+      - 80
+    volumes:
+      - ./containerfs/data:/var/www/wallabag/data
+      - ./containerfs/images:/var/www/wallabag/images
+    env_file: ./.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wallabag.entrypoints=websecure"
+      - "traefik.http.routers.wallabag.tls.certresolver=acme"
+      - "traefik.http.routers.wallabag.rule=Host(`${TRAEFIK_HOST}`)"

@@ -1,0 +1,36 @@
+version: "3.8"
+
+networks:
+  traefik_net:
+    driver: bridge
+    name: traefik_net
+
+secrets:
+  cf_dns_api_token:
+    file: ./secrets/cf_dns_api_token.secret
+
+services:
+
+  reverse-proxy:
+    image: traefik:v2.4
+    networks: 
+      - traefik_net
+    ports:
+      - 80:80
+      - 443:443
+    secrets:
+      - cf_dns_api_token
+    environment:
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.toml:/etc/traefik/traefik.toml:ro
+      - ./ssl:/ssl
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.dashboardIPwhitelist.ipwhitelist.sourcerange=${TRAEFIK_WHITELIST_CIDR}"
+      - "traefik.http.routers.dashboard.middlewares=dashboardIPwhitelist"
+      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=acme"
+      - "traefik.http.routers.dashboard.service=api@internal"
