@@ -1,0 +1,37 @@
+version: "3.8"
+
+networks:
+  default:
+    external:
+      name: traefik_net
+    
+services:
+
+  linkace:
+    image: linkace/linkace:simple
+    depends_on:
+      - linkacedb
+    ports:
+      - 80
+    volumes:
+      - ./.env:/app/.env
+      - ./containerfs/backups:/app/storage/app/backups
+      - ./containerfs/logs:/app/storage/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.linkding.entrypoints=websecure"
+      - "traefik.http.routers.linkding.tls.certresolver=acme"
+      - "traefik.http.routers.linkding.rule=Host(`${TRAEFIK_HOST}`)"
+
+  linkacedb:
+    image: mariadb:10.5
+    restart: always
+    ports: 
+      - 5432
+    volumes:
+      - ./containerfs/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}

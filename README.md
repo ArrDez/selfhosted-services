@@ -9,6 +9,7 @@ Selfhosted services i am using, running on a VPS
   - [Wallabag](https://github.com/wallabag/wallabag) - read later list
   - [Shaarli](https://github.com/shaarli/Shaarli) - bookmarking service
   - [linkding](https://github.com/sissbruecker/linkding) - another bookmarking service (don't ask why)
+  - [LinkAce](https://github.com/Kovah/LinkAce)
 
 ## Description 
 
@@ -27,7 +28,7 @@ $ ./service.sh fireflyiii backup # Exec backup.sh script in the service dir
 ## Starting from scratch
 1. Get your Cloudflare API token ([more info](https://go-acme.github.io/lego/dns/cloudflare/#api-tokens))
 2. Put Cloudflare API token under `secrets/cf_dns_api_token.secret`
-3. Run Traefik service
+3. Run the Traefik service
     
   ```shell
     $ docker-compose up -d
