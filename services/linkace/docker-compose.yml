@@ -19,9 +19,9 @@ services:
       - ./containerfs/logs:/app/storage/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.linkding.entrypoints=websecure"
-      - "traefik.http.routers.linkding.tls.certresolver=acme"
-      - "traefik.http.routers.linkding.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.linkace.entrypoints=websecure"
+      - "traefik.http.routers.linkace.tls.certresolver=acme"
+      - "traefik.http.routers.linkace.rule=Host(`${TRAEFIK_HOST}`)"
 
   linkacedb:
     image: mariadb:10.5
