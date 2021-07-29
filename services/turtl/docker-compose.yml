@@ -1,0 +1,53 @@
+version: "3.8"
+
+networks:
+  default:
+    external:
+      name: traefik_net
+
+services:
+
+  turtl-web:
+    build: ./docker_files/web
+    ports:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.turtl.entrypoints=websecure"
+      - "traefik.http.routers.turtl.tls.certresolver=acme"
+      - "traefik.http.routers.turtl.rule=Host(`${TRAEFIK_HOST}`)"
+
+
+  turtl:
+    build: ./docker_files
+    depends_on:
+      turtldb: 
+        condition: service_healthy
+    ports:
+      - 8181
+    volumes:
+      - ./containerfs/turtl/uploads:/var/www/firefly-iii/storage/export
+    env_file: ./.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.turtl.entrypoints=websecure"
+      - "traefik.http.routers.turtl.tls.certresolver=acme"
+      - "traefik.http.routers.turtl.rule=Host(`${TRAEFIK_HOST}`)"
+
+  turtldb:
+    image: postgres:13-alpine
+    restart: always
+    ports: 
+      - 5432
+    volumes:
+      - ./containerfs/db/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${TURTL_DB_USER}
+      - POSTGRES_PASSWORD=${TURTL_DB_PASSWORD}
+      - POSTGRES_DB=${TURTL_DB_DATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${TURTL_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    

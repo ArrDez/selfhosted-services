@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+
 checkDirExsistance() {
   if [ ! -d $1 ]; then
     echo "Service does not exist"
@@ -22,7 +24,7 @@ if [[ -z "$1" ]]; then
  exit 1
 fi
 
-SERVICE_PATH="${PWD}/services/${1}"
+SERVICE_PATH="${SCRIPT_DIR}/services/${1}"
 
 checkDirExsistance $SERVICE_PATH
  
