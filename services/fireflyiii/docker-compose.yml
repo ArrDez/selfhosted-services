@@ -8,7 +8,7 @@ networks:
 services:
 
   fireflyiii:
-    image: jc5x/firefly-iii:latest
+    image: fireflyiii/core
     depends_on:
       - fireflyiiidb
     ports:
